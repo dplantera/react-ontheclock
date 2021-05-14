@@ -1,0 +1,23 @@
+.time-table{
+    position: relative;
+    height: 60%;
+    width: 100%;
+    background-color: #ffffff;
+    overflow: scroll;
+
+}
+
+.time-table-row{
+    align-items: center;
+    justify-content: space-evenly;
+    gap:20%;
+}
+
+.headline{
+  font-weight: bold;
+}
+
+.time-table-row > div{
+    width: 30%;
+    text-align: center;
+}

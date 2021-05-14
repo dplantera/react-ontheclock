@@ -1,0 +1,28 @@
+.flex-container {
+    display: flex;
+}
+
+.relative {
+    position: relative;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.fullHeight {
+    height: 100%;
+}
+
+.spaceBetween {
+    align-content: space-between;
+    justify-content: space-between;
+}
+
+.column {
+    flex-direction: column;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}

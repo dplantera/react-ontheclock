@@ -1,0 +1,43 @@
+.over-hours {
+    position: relative;
+    min-height: 50px;
+    min-width: 50px;
+    max-width: 90%;
+    background-color: #ffffff;
+    font-size: 4rem;
+    text-align: center;
+    justify-content: center;
+    padding: 5px;
+    overflow: hidden;
+    border: black 2px solid;
+    border-radius: 15px;
+}
+
+.over-hours-item {
+    align-self: center;
+    margin:5px;
+    flex-grow: 1;
+}
+
+.over-hours-item-label {
+    font-size: 1rem;
+}
+
+.over-hours-sm {
+    width: 40%;
+    height: auto;
+    max-width: 50%;
+    max-height: 50%;
+}
+
+.over-hours-signal-bad{
+    color: red;
+}
+
+.over-hours-signal-alarm{
+    color: orange;
+}
+
+.over-hours-signal-good{
+    color: green;
+}

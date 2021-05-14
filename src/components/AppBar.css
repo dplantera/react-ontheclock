@@ -1,0 +1,29 @@
+.app-bar{
+    --appbar-padding: 10px;
+    width: 100%;
+    min-height: calc(var(--height-appbar)/2);
+    max-height: var(--height-appbar);
+    background-color: var(--color-primary);
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-name{
+    font: 1.8rem bold;
+    padding: var(--appbar-padding);
+    color: white;
+}
+
+.app-menu{
+    padding: var(--appbar-padding);
+    height: 70%;
+    width: auto;
+    color: white;
+}
+
+
+.app-menu:active {
+    background-color: #819bb3;
+}
+
+

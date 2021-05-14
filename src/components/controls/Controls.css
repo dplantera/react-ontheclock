@@ -1,0 +1,9 @@
+
+.app-controls {
+    width: 100%;
+    height: calc(15% - var(--height-appbar));
+    min-height: 110px;
+    background-color: var(--color-primary);
+    bottom: 0;
+}
+

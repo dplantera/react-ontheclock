@@ -1,0 +1,12 @@
+.select-box{
+    width: 100%;
+    min-width: 50px;
+    min-height: 25px;
+    justify-self: center;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    background-color: #ffffff;
+    margin-bottom: auto;
+    text-align: center;
+}
+

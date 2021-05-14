@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
+import AppBar from "./components/AppBar";
+import Controls from "./components/controls/Controls";
+import FlexContainer from "./components/layout/FlexContainer";
+import Dashboard from "./components/dashboard/Dashboard";
+import TimeTable from "./components/timetable/TimeTable";
+import "./Calendar.css"
 import './App.css';
+import Calendar from "./components/Calendar";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <FlexContainer styleSetting={{column: true, spaceBetween: true}}>
+                <AppBar/>
+                <Calendar/>
+                <TimeTable/>
+                <Dashboard/>
+                <Controls/>
+            </FlexContainer>
+        </div>
+    );
 }
 
 export default App;
