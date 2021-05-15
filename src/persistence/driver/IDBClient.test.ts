@@ -1,24 +1,55 @@
 import {IDBClient} from "./IDBClient";
 import {TStoreParameters} from "./indexeddb.config";
+
 require("fake-indexeddb/auto");
 
-const NAME_TEST_DB = "test-db";
+const NAME_DB = "test-db";
+const NAME_STORE = "test-store";
 
-test("default client", async () => {
+
+test("default client - connect, create store and get transaction", async () => {
     let underTest = new IDBClient();
-
-    let db = await underTest.connect(NAME_TEST_DB);
+    //connection
+    let db = await underTest.connect(NAME_DB);
     expect(db.version).toBe(1);
-    // db.close();
-
+    //auto store creation
+    db.onversionchange = (e) => {
+        db.close();
+    };
     const storeParams: TStoreParameters = {
-        database: NAME_TEST_DB,
+        database: NAME_DB,
     }
-    db = await underTest.getDbForStore("test-storage", storeParams);
-
+    db = await underTest.getDbForStore(NAME_STORE, storeParams);
     expect(db.version).toBe(2);
-    expect(db.name).toContain(NAME_TEST_DB);
-    expect(db.objectStoreNames).toContain("test-storage");
+    expect(db.name).toContain(NAME_DB);
+    expect(db.objectStoreNames).toContain(NAME_STORE);
+    //transaction
+    const transaction = await db.transaction(NAME_STORE)
+    expect(transaction.error).toBeNull();
+
+    const store = transaction.objectStore(NAME_STORE);
+    expect(store.name).toBe(NAME_STORE);
+})
+
+test("default client - use storeTransaction to perform transactions", async () => {
+    let underTest = new IDBClient();
+    const store = await underTest.storeTransaction(NAME_STORE, "readwrite");
+
+    expect(store.name).toBe(NAME_STORE);
+    let itemToStore = {name: "test", type: "some-type"};
+
+    const add = async (itemToStore: object) => new Promise(async (resolve) => {
+        const addRequest = await store.add(itemToStore);
+        addRequest.onerror = () => fail("could not create");
+        addRequest.onsuccess = () => {
+            resolve(addRequest.result)
+        }
+    })
+
+    let createdID = await add(itemToStore);
+    expect(createdID).toBe(1);
+    createdID = await add({name: "test2", type: "other-type"});
+    expect(createdID).toBe(2);
 })
 
 export {}

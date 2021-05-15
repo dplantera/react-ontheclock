@@ -15,36 +15,8 @@ class DBVersion {
     }
 }
 
-class DBConnection<T> {
-    private mapDbConnections: Record<string, T> = {};
-    private nameDbDefault:string;
-
-    constructor(nameDbDefault:string) {
-        this.nameDbDefault = nameDbDefault;
-    }
-
-    add(connection:T, dbname:string = this.nameDbDefault){
-        this.mapDbConnections[dbname] = connection;
-    }
-
-    get(dbName: string = this.nameDbDefault): T {
-        return this.mapDbConnections[dbName];
-    }
-
-    has(dbName:string){
-        return this.mapDbConnections[dbName] !== null;
-    }
-
-    remove(dbName:string){
-        if(!this.has(dbName))
-            return;
-        delete this.mapDbConnections[dbName]
-    }
-}
-
 export class IDBClient {
     private static dbVersion: DBVersion;
-    private static dbConnection: DBConnection<IDBDatabase>
     private indexedDB: IDBFactory;
     nameDbDefault: string;
 
@@ -57,10 +29,6 @@ export class IDBClient {
 
     get version() {
         return IDBClient.dbVersion;
-    }
-
-    get connections(){
-        return IDBClient.dbConnection;
     }
 
     private getDbName(store?: string) {
@@ -95,6 +63,7 @@ export class IDBClient {
         return new Promise(async (resolve, reject) => {
             try {
                 const db = await this.connect(dbName);
+
                 resolve(db)
             } catch (err) {
                 reject(err);
