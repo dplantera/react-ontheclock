@@ -62,7 +62,7 @@ export class IDBClient {
     }
 
     async getOrCreateObjectStore(storeName: string, params: TStoreParameters = this.storeConfig.get(storeName)) {
-        let db = await this.getDb();
+        let db = await this.getDb(params.database);
         console.log(" - version: " + (db.version ?? -1) + " | " + (this.version ?? -1))
         if (!this.version)
             this.version = db.version;
@@ -97,17 +97,19 @@ export class IDBClient {
         });
     }
 
-    async storeTransaction(storeName: string, mode: IDBTransactionMode = "readwrite", params: TStoreParameters = this.storeConfig.get(storeName)) {
-        let db = await this.getOrCreateObjectStore(storeName, params);
+    async storeTransaction(storeName: string, mode: IDBTransactionMode = "readonly", params?: TStoreParameters) {
+        const store = storeName.toLowerCase();
+        const storeParams = params ?? this.storeConfig.get(store);
+        let db = await this.getOrCreateObjectStore(store, storeParams);
 
         db.onversionchange = (e) => {
-            console.log("reloading db: " + storeName, e);
+            console.log("reloading db: " + store, e);
             db.close();
         };
 
         // make transaction
-        const tx = db.transaction(storeName, mode);
+        const tx = db.transaction(store, mode);
         // tx.oncomplete = (e) => {console.log("transaction ", e)}
-        return tx.objectStore(storeName);
+        return tx.objectStore(store);
     }
 }

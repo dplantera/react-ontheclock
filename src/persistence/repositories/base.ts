@@ -12,7 +12,7 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
     }
 
     async create(item: T): Promise<T> {
-        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName, "readwrite");
         return new Promise(((resolve, reject) => {
             const request = storeTransaction.add(item);
             request.onsuccess = (e) => {
@@ -38,7 +38,7 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
     }
 
     async delete(id: string | number): Promise<boolean> {
-        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName, "readwrite");
         return new Promise(((resolve, reject) => {
             const request = storeTransaction.delete(id);
             request.onsuccess = () => resolve(true);
@@ -50,7 +50,7 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
     }
 
     async update(item: T, id?: string | number): Promise<boolean> {
-        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName, "readwrite");
         return new Promise(((resolve, reject) => {
             const request = storeTransaction.put(item, id);
             request.onsuccess = () => resolve(true);
@@ -62,7 +62,7 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
     }
 
     async find(item: Newable<T>): Promise<T[]> {
-        const storeTransaction = await this.dbClient.storeTransaction(this.storeName, "readonly");
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
         return new Promise(((resolve, reject) => {
             const request = storeTransaction.getAll();
             request.onsuccess = () => resolve(request.result.map(this.transform));
@@ -73,7 +73,7 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
     }
 
     async findOne(id: string | number): Promise<T> {
-        const storeTransaction = await this.dbClient.storeTransaction(this.storeName, "readonly");
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
         return new Promise(((resolve, reject) => {
             const request = storeTransaction.get(id);
             request.onsuccess = () => resolve(this.transform(request.result) );

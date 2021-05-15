@@ -11,8 +11,8 @@ export const Store: ClassDecoratorFactory = (args: { name?: string, database?: s
         const cfg = MetaInfo[constructor.name];
         MetaInfo[constructor.name] = {
             ...cfg,
-            store: args.name ?? constructor.name.toLowerCase(),
-            database: args.database
+            store: args?.name ?? constructor.name.toLowerCase(),
+            database: args?.database
         }
     }
 }

@@ -2,6 +2,7 @@ import {Entity} from "../entities";
 import {IDBRepository} from "../repositories/base";
 import {IDBClient} from "./IDBClient";
 import {Newable} from "../repositories/interfaces";
+import {Index, PrimaryKey, Store} from "./indexeddb.decorator";
 
 require("fake-indexeddb/auto");
 
@@ -116,6 +117,32 @@ test("class", async () => {
     }
 
     const data = new Data(1, "test");
+    const dataStore = new IDBRepository(Data, indexedDbClient);
+    const created = await dataStore.create(data);
+    expect(created.id).toBe(1);
+    expect(dataStore.dbClient.version).toBe(2);
+
+    let foundData = await dataStore.findOne(1);
+    expect(foundData.id).toBe(1);
+    expect(foundData).toBeInstanceOf(Data)
+})
+
+test("class with decorator", async () => {
+    @Store()
+    class Data extends Entity {
+        id?:number;
+        @PrimaryKey({autoIncrement:false})
+        attrNum:number;
+        @Index()
+        attrStr:string;
+        constructor(attrNum: number, attrStr: string) {
+            super();
+            this.attrNum = attrNum;
+            this.attrStr = attrStr;
+        }
+    }
+
+    const data = new Data(1, "test2");
     const dataStore = new IDBRepository(Data, indexedDbClient);
     const created = await dataStore.create(data);
     expect(created.id).toBe(1);
