@@ -61,10 +61,22 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
         }));
     }
 
-    async find(item: Newable<T>): Promise<T[]> {
+
+    async getById(id: string | number): Promise<T> {
         const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
         return new Promise(((resolve, reject) => {
-            const request = storeTransaction.getAll();
+            const request = storeTransaction.get(id);
+            request.onsuccess = () => resolve(this.transform(request.result) );
+            request.onerror = () => {
+                reject(request.error)
+            };
+        }));
+    }
+
+    async get(query: IDBValidKey | IDBKeyRange): Promise<T[]> {
+        const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
+        return new Promise(((resolve, reject) => {
+            const request = storeTransaction.getAll(query);
             request.onsuccess = () => resolve(request.result.map(this.transform));
             request.onerror = () => {
                 reject(request.error)
@@ -72,11 +84,11 @@ export class IDBRepository<T extends Entity> implements IWrite<T>, IRead<T> {
         }));
     }
 
-    async findOne(id: string | number): Promise<T> {
+    async getAll(): Promise<T[]> {
         const storeTransaction = await this.dbClient.storeTransaction(this.storeName);
         return new Promise(((resolve, reject) => {
-            const request = storeTransaction.get(id);
-            request.onsuccess = () => resolve(this.transform(request.result) );
+            const request = storeTransaction.getAll();
+            request.onsuccess = () => resolve(request.result.map(this.transform));
             request.onerror = () => {
                 reject(request.error)
             };

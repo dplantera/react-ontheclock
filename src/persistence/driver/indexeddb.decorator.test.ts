@@ -1,5 +1,5 @@
 import {Index, PrimaryKey, Store} from "./indexeddb.decorator";
-import {DBConfig} from "./indexeddb.config";
+import {StoreConfig} from "./indexeddb.config";
 
 const NAME_DB_CUSTOM = "test-db-2";
 
@@ -32,13 +32,13 @@ class OtherObj {
 }
 
 test("decorator for indexed db", () => {
-    const storeConfigTestObj = DBConfig.for(DBConfig.NAME_DB_DEFAULT).get(TestObj.name);
+    const storeConfigTestObj = StoreConfig.getInstance().for(TestObj.name);
     expect(storeConfigTestObj.indices).toEqual([{name: "name"}]);
     expect(storeConfigTestObj.keyPath).toEqual(["id"]);
-    expect(storeConfigTestObj.database).toBe(DBConfig.NAME_DB_DEFAULT);
+    expect(storeConfigTestObj.database).toBe(StoreConfig.NAME_DB_DEFAULT);
     expect(storeConfigTestObj.autoIncrement).toBe(true);
 
-    const storeConfigOtherObj = DBConfig.for(NAME_DB_CUSTOM).get(OtherObj.name);
+    const storeConfigOtherObj = StoreConfig.getInstance().for(OtherObj.name);
     expect(storeConfigOtherObj.indices).toEqual([{name: "name"}]);
     expect(storeConfigOtherObj.keyPath).toEqual(["date","name"]);
     expect(storeConfigOtherObj.database).toBe(NAME_DB_CUSTOM);
