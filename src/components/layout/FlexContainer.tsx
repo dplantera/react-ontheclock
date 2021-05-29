@@ -1,23 +1,26 @@
-import React, {useEffect, useState, useCallback, useRef} from 'react';
+import React, {useEffect, useState, useCallback, useRef, memo, HTMLAttributes} from 'react';
 import "./FlexContainer.css"
+import {log} from "../../utils/logger";
 
 interface IMapping {
     [propertyName: string]: any
 }
 
 interface FlexContainerStyleSettings extends IMapping {
-    fullWidth?: Boolean,
-    wrap?: Boolean,
-    fullHeight?: Boolean,
-    relative?: Boolean,
-    column?: Boolean,
+    fullWidth?: Boolean
+    wrap?: Boolean
+    fullHeight?: Boolean
+    relative?: Boolean
+    column?: Boolean
     spaceBetween?:Boolean
+    ref?: React.Ref<HTMLDivElement>
 }
 
 interface FlexContainerProps {
     styleSetting?: FlexContainerStyleSettings
     styles?: Object
-    className?: string,
+    className?: string
+    domAttr?: HTMLAttributes<any>
 }
 
 const PropsDefault = {
@@ -30,7 +33,6 @@ const PropsDefault = {
 }
 
 function FlexContainer(props: React.PropsWithChildren<FlexContainerProps>) {
-    console.log({props})
     props = {
         ...PropsDefault,
         ...props,
@@ -44,7 +46,6 @@ function FlexContainer(props: React.PropsWithChildren<FlexContainerProps>) {
 
     const assembleClassName = useCallback(() => {
         let result = refClassName.current;
-        console.log({styleSetting, props})
         const append = (name: String) => result += (" " + name);
         for (let key in styleSetting.current) {
             if (styleSetting.current[key])
@@ -59,13 +60,12 @@ function FlexContainer(props: React.PropsWithChildren<FlexContainerProps>) {
     useEffect(() => {
         setClassName(assembleClassName())
     }, [setClassName, assembleClassName])
-    console.log("...rendering")
 
     return (
-        <div className={className} style={props.styles}>
+        <div className={className} style={props.styles} {...props.domAttr}>
             {props.children}
         </div>
     );
 }
 
-export default FlexContainer;
+export default memo(FlexContainer);

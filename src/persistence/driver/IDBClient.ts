@@ -1,4 +1,6 @@
-import {StoreConfig, IStoreConfig, TStoreParameters} from "./indexeddb.config";
+import {StoreConfig, TStoreParameters} from "./indexeddb.config";
+import {getLogger} from "../../utils/logger"
+const log = getLogger("IDBClient");
 
 class DBVersion {
     private dbVersionMap: Record<string, number | undefined> = {}
@@ -34,7 +36,7 @@ export class IDBClient {
     private getDbName(store?: string) {
         if (!store)
             return this.nameDbDefault;
-        return this.storeConfig.for(store);
+        return this.storeConfig.for(store)?.database || this.nameDbDefault;
     }
 
     async deleteDb(dbName: string = this.getDbName()): Promise<boolean> {
@@ -72,10 +74,10 @@ export class IDBClient {
     }
 
     async getDbForStore(storeName: string, params: TStoreParameters) {
-        const dbName = params.database || this.getDbName(storeName);
+        const dbName = this.getDbName(storeName);
         let db = await this.getDb(dbName);
         let dbVersionCurrent = this.version.get(dbName);
-        console.log(" - version: " + (db.version ?? -1) + " | " + (dbVersionCurrent ?? -1))
+        log.debug(" - version: " + (db.version ?? -1) + " | " + (dbVersionCurrent ?? -1))
         if (!dbVersionCurrent)
             dbVersionCurrent = db.version
 
@@ -83,7 +85,7 @@ export class IDBClient {
             dbVersionCurrent++
 
         if (db.version === dbVersionCurrent) {
-            console.log("no need to upgrade: ", storeName)
+            log.debug("no need to upgrade: ", storeName)
             return db;
         }
         this.version.set(dbVersionCurrent, dbName);
@@ -98,13 +100,13 @@ export class IDBClient {
             indexedDb.version.set(db.version, dbName);
             if (!db.objectStoreNames.contains(storeName)) {
                 const objectStore = db.createObjectStore(storeName, params);
-                console.log("objectStore created: ", {objectStore, params});
+                log.debug("objectStore created: ", {objectStore, params});
                 if (!indices) {
                     return;
                 }
                 for (let index of indices) {
                     objectStore.createIndex(index.name, index.keyPath ?? index.name, index.options ?? {})
-                    console.log("index created: ", {index});
+                    log.debug("index created: ", {index});
                 }
             }
         });
@@ -114,13 +116,13 @@ export class IDBClient {
         let db = await this.getDbForStore(storeName, params);
 
         db.onversionchange = (e) => {
-            console.log("reloading db: " + storeName, e);
+            log.debug("reloading db: " + storeName, e);
             db.close();
         };
 
         // make transaction
         const tx = db.transaction(storeName, mode);
-        // tx.oncomplete = (e) => {console.log("transaction ", e)}
+        // tx.oncomplete = (e) => {log.debug("transaction ", e)}
         return tx.objectStore(storeName);
     }
 }

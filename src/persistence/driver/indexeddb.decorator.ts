@@ -4,7 +4,7 @@ import {TStoreParameters} from "./indexeddb.config";
 import {ClassDecoratorFactory, PropertyDecoratorFactory} from "../../utils/decorator";
 
 type TMetaInfo = { store: string, database?: string } & TStoreParameters;
-const MetaInfo: Record<string, TMetaInfo> = {};
+const MetaInfo: Record<string, TMetaInfo & {type: Function}> = {};
 
 export const Store: ClassDecoratorFactory = (args: { name?: string, database?: string }) => {
     return (constructor: Function) => {
@@ -12,7 +12,8 @@ export const Store: ClassDecoratorFactory = (args: { name?: string, database?: s
         MetaInfo[constructor.name] = {
             ...cfg,
             store: args?.name ?? constructor.name,
-            database: args?.database ?? ""
+            database: args?.database ?? "",
+            type: constructor
         }
     }
 }

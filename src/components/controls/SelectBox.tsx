@@ -1,4 +1,4 @@
-import React from 'react';
+import {PropsWithChildren} from 'react';
 import "./SelectBox.css"
 
 
@@ -7,7 +7,7 @@ interface SelectBoxProps {
     options: [{ value: string , display?:string}]
 }
 
-function SelectBox(props: React.PropsWithChildren<SelectBoxProps>) {
+function SelectBox(props: PropsWithChildren<SelectBoxProps> ) {
     return (
         <div>
             <select className={"select-box"} name={"select-box-" + props.id}  id={"select-box-" + props.id}>

@@ -1,0 +1,45 @@
+:root {
+    --menu-size: 150;
+    --icon-size: calc(var(--menu-size) / 3);
+}
+
+.menu {
+    position: absolute;
+    width: calc(var(--menu-size) * 1px);
+    height: calc(var(--menu-size) * 1px);
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 50%;
+    z-index: 2;
+    transition: all 1s linear;
+}
+
+.icon-container {
+    position: absolute;
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);;
+    transform: translateY(calc(var(--icon-size) * 1px)) translateX(calc(var(--icon-size) * 1px));
+    /*border: black 1px solid;*/
+    border-radius: 50%;
+    background-color: white;
+}
+
+.icon-container :hover {
+    fill: var(--color-primary);
+    opacity: 0.5;
+}
+
+.icon {
+    transform: scale(2) translateY(50%);
+}
+
+.menu .icon-container:first-child {
+    transform: translateX(calc(var(--icon-size) / 2 * 1px - 50%)) translateY(calc(var(--menu-size) / 2 * 1px));
+}
+
+.menu .icon-container:nth-child(2) {
+    top: calc(var(--menu-size) / 2 * 1px - calc(var(--icon-size) / 2 * 1px));
+}
+
+.menu .icon-container:nth-child(3) {
+    transform: translateX(calc(var(--menu-size) / 2 * 1px + calc(var(--icon-size) / 2 * 1px))) translateY(calc(var(--menu-size) / 2 * 1px));
+}

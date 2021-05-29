@@ -1,0 +1,72 @@
+.notification {
+    max-width: 500px;
+    max-height: 250px;
+    min-width: 50px;
+    min-height: 25px;
+    width: 50%;
+    height: auto;
+
+    padding: 10px;
+
+    position: absolute;
+    overflow:auto;
+    top: 50px;
+    right: 5px;
+
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+}
+
+.notification-title {
+}
+
+.notification.content {
+}
+
+.notification-main-enter > *{
+        opacity: 0;
+        transform: translateX(20px);
+}
+.notification-main-enter-active > *{
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 1s;
+}
+
+.notification-main-exit > *{
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 1s;
+}
+.notification-main-exit-done > *{
+    opacity: 0;
+    transform: translateX(20px);
+    z-index: -1;
+}
+
+
+@keyframes fadeInLeft{
+    0%{
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fadeInLeft {
+    animation: fadeInLeft 1s
+}
+
+.error{
+
+}
+
+.info {
+
+}
+
+.success {
+
+}

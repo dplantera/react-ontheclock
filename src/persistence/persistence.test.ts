@@ -6,6 +6,9 @@ import {Index, PrimaryKey, Store} from "./driver/indexeddb.decorator";
 
 require("fake-indexeddb/auto");
 
+// const dataStoreConfig = StoreConfig.getInstance().for("data");
+// dataStoreConfig.autoIncrement = true;
+
 let indexedDbClient = new IDBClient();
 
 beforeEach(async () => {
@@ -14,8 +17,9 @@ beforeEach(async () => {
 
 test('test crud operations on an object', async () => {
     type Data = { attrNum: number, attrStr: string } & Entity
-    const data: Data = {attrNum: 1, attrStr: "test"};
+    const data: Data = {id:undefined, attrNum: 1, attrStr: "test"};
     const storeData = new IDBRepository<Data>("data", indexedDbClient);
+
     // create
     const storedDate = await storeData.create(data);
     expect(storedDate.id).toBe(1);
@@ -36,8 +40,8 @@ test('test crud operations on an object', async () => {
     expect(foundData.id).toBe(1);
     expect(foundData.attrNum).toBe(2);
     expect(foundData.attrStr).toBe("test updated");
-
-    const forUpdate = {...foundData, attrStr: "test partial upt"};
+    // _id:undefined TS Workaround for IDB
+    const forUpdate = {id:undefined, ...foundData, attrStr: "test partial upt"};
     uptData = await storeData.update(forUpdate);
     expect(uptData).toBe(true);
 
@@ -59,7 +63,7 @@ test('create multiply objects of same type', async () => {
     const data: Data[] = [];
 
     for (let i = 0; i < 20; i++) {
-        data.push({attrNum: i, attrStr: "test-" + i})
+        data.push({id:undefined, attrNum: i, attrStr: "test-" + i})
     }
 
     const storeData = new IDBRepository<Data>("data", indexedDbClient);
@@ -89,18 +93,18 @@ test('create multiply objects and stores of different type', async () => {
     const dataTwoStore = new IDBRepository("data-two", indexedDbClient);
     const dataThreeStore = new IDBRepository("data-three", indexedDbClient);
 
-    const data: Data = {attrNum: 1, attrStr: "test data"};
+    const data: Data = {id:undefined, attrNum: 1, attrStr: "test data"};
 
     let created = await dataStore.create(data);
     expect(created.id).toBe(1);
     expect(dataStore.dbClient.version.get()).toBe(2);
 
-    const data2: DataTwo = {attrNum: 2};
+    const data2: DataTwo = {id:undefined, attrNum: 2};
     created = await dataTwoStore.create(data2);
     expect(created.id).toBe(1);
     expect(dataTwoStore.dbClient.version.get()).toBe(3);
 
-    const data3: DataThree = {attrNum: 3, attrBool: true};
+    const data3: DataThree = {id:undefined, attrNum: 3, attrBool: true};
     created = await dataThreeStore.create(data3);
     expect(created.id).toBe(1);
     expect(dataThreeStore.dbClient.version.get()).toBe(4);
@@ -130,8 +134,6 @@ test("class without decorator", async () => {
 test("class with decorator", async () => {
     @Store()
     class DataDecorated extends Entity {
-        id?:number;
-        @PrimaryKey({autoIncrement:false})
         attrNum:number;
         @Index()
         attrStr:string;
@@ -158,7 +160,7 @@ test("newable", () => {
         constructor(public type: Newable<T>) {
         }
 
-        trasnform(object: T) {
+        transform(object: T) {
             const newObj = Object.create(this.type.prototype);
             return Object.assign(newObj, object);
         }
@@ -174,7 +176,7 @@ test("newable", () => {
     }
 
     const generic = new Generic<Data>(Data);
-    const obj = generic.trasnform({attrNum: 1, attrStr: "test-attr"})
+    const obj = generic.transform({id:undefined, attrNum: 1, attrStr: "test-attr"})
     expect(obj).toBeInstanceOf(Data)
 })
 

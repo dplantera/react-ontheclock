@@ -2,8 +2,10 @@
 .app-controls {
     width: 100%;
     height: calc(15% - var(--height-appbar));
-    min-height: 110px;
+    min-height: 5rem;
     background-color: var(--color-primary);
     bottom: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 

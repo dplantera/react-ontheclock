@@ -1,13 +1,14 @@
-import React from 'react';
+import {PropsWithChildren, ButtonHTMLAttributes} from 'react';
 import "./Button.css"
 
-interface ButtonProps{
-
+interface ButtonProps {
 }
-function Button(props: React.PropsWithChildren<ButtonProps>) {
-    return (
-        <button type={"button"} className={"button"} >{props.children}</button>
 
+
+function Button(props: PropsWithChildren<ButtonProps> & ButtonHTMLAttributes<HTMLButtonElement>) {
+    const {children, ...htmlButtonProps} = props;
+    return (
+        <button type={"button"} className={"button"} {...htmlButtonProps}>{props.children}</button>
     );
 }
 
