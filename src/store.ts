@@ -39,12 +39,10 @@ export const useCalendarStore = create<CalendarStore>((set: SetState<CalendarSto
 
 type TimeTableStore = {
     timeRecords: TimeRecord[]
-    addTimeRecords: (timeRecords: TimeRecord[]) => void
-    setTimeRecords: (timeRecords: TimeRecord[]) => void
-    setCurrentTimeRecord: (timeRecord: Partial<TimeRecord>) => void
     currentTimeRecord: Partial<TimeRecord> & TimeRecord
     startRecord: () => void
     stopRecord: () => void
+    updateRecord: (timeRecord: Partial<TimeRecord>) => void
     fetchTimeRecords: () => Promise<void>
 }
 const timeRecordRepo = new IDBRepository(TimeRecord);
@@ -53,26 +51,39 @@ const timeRecordRepo = new IDBRepository(TimeRecord);
 export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTableStore>, get: GetState<TimeTableStore>) => (
     {
         timeRecords: [],
-        addTimeRecords: (timeRecords: TimeRecord[]): void => {
-            set({
-                timeRecords: [...get().timeRecords, ...timeRecords]
-            });
-        },
-        setTimeRecords: (timeRecords: TimeRecord[]): void => {
-            set({
-                timeRecords: [...timeRecords]
-            });
-        },
         currentTimeRecord: new TimeRecord(),
-        setCurrentTimeRecord: (timeRecord: Partial<TimeRecord>): void => {
-            const records = get().timeRecords;
-            const newCurrent = Object.assign(get().currentTimeRecord, timeRecord);
-            timeRecordRepo.update(newCurrent).then();
-            records[records.length - 1] = newCurrent;
-            set({
-                currentTimeRecord: newCurrent,
-                timeRecords: [...records]
-            });
+        updateRecord: async (timeRecord: Partial<TimeRecord>) => {
+            const prevRecord = get().timeRecords.find(tr => tr.id === timeRecord.id);
+
+            const determineId = () => {
+                if (!prevRecord && timeRecord.id)
+                    return timeRecord.id;
+                if (!prevRecord && timeRecord.timeStart)
+                    return DateTransform.for(timeRecord.timeStart).truncate("day").toDate().getTime();
+                if (timeRecord.timeStart && prevRecord?.timeStart?.getTime() !== timeRecord.timeStart?.getTime())
+                    return DateTransform.for(timeRecord.timeStart).truncate("day").toDate().getTime();
+                if (timeRecord.id)
+                    return timeRecord.id;
+                if (prevRecord)
+                    return prevRecord.id;
+            }
+
+            if (timeRecord.timeStart && timeRecord.timeEnd)
+                timeRecord.totalHours = Duration.for(timeRecord.timeStart, timeRecord.timeEnd).toHours()
+            if (!prevRecord || timeRecord?.timeStart?.getTime() !== prevRecord?.timeStart?.getTime()) {
+                const id = determineId();
+                const newRecord = {id, ...timeRecord};
+                set({timeRecords: [...get().timeRecords, newRecord]})
+                await timeRecordRepo.update(newRecord);
+            }
+            if (prevRecord) {
+                const id = determineId();
+                const newRecord = {...prevRecord, ...timeRecord, id};
+                set({timeRecords: [...get().timeRecords.filter(r => r.id !== prevRecord.id), newRecord]})
+                if (prevRecord.id)
+                    await timeRecordRepo.delete(prevRecord.id);
+                await timeRecordRepo.update(newRecord);
+            }
         },
         startRecord: (): void => {
             const records = get().timeRecords;
@@ -98,6 +109,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 currentTimeRecord: new TimeRecord(),
                 timeRecords: [...records]
             });
+            timeRecordRepo.update(currentTimeRecord);
         },
         fetchTimeRecords: async (): Promise<void> => {
             const timeRecords = await timeRecordRepo.getAll();

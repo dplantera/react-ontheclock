@@ -13,44 +13,6 @@
     gap:20%;
 }
 
-.selected {
-    background-color: var(--color-primary);
-    opacity: 0.7;
-}
-
-@keyframes growBackground {
-    0%{
-        opacity: 0;
-        width: 0;
-
-    }
-    100%{
-        opacity: 0.7;
-        width: 100%;
-    }
-}
-
-.item::after{
-    opacity: 0;
-    display: inline-block;
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 100%;
-    max-height: 1.5rem;
-    background-color: var(--color-primary);
-}
-
-.item:active:after{
-    content: "";
-    animation: growBackground 0.7s ease-out;
-}
-
 .headline{
     font-weight: bold;
-}
-
-.time-table-row > div{
-    width: 30%;
-    text-align: center;
 }

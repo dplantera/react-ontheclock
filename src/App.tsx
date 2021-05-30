@@ -11,6 +11,7 @@ import {useNotificationStore, useTimeTableStore} from "./store";
 
 import Notification from "./components/Notification";
 import Menu from "./components/Menu";
+import EditRecord from "./components/timetable/EditRecord";
 
 function App() {
     const [notify] = useNotificationStore(state => [state.notify]);

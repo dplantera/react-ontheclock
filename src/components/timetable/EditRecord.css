@@ -1,0 +1,32 @@
+.edit-record {
+    width: 50%;
+    height: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-record-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    padding: 20px;
+    border: var(--color-primary) 1px solid;
+}
+
+.form-item {
+    max-height: 25px;
+    flex-grow: 0;
+    justify-content: space-between;
+}
+
+.form-item > label {
+    text-align: center;
+    line-height: 2;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.form-item > input {
+    z-index: 2;
+}
