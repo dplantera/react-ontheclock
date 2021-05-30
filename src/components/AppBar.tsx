@@ -1,4 +1,3 @@
-import React, {useEffect} from 'react';
 import FlexContainer from "./layout/FlexContainer";
 import "./AppBar.css";
 import {ReactComponent as MenuBar } from "../assets/bars-solid.svg";

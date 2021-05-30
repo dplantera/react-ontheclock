@@ -1,5 +1,5 @@
 .modal {
-    --modal-size:80;
+    --modal-size:25;
     display: flex;
     position: absolute;
     flex-direction: column;

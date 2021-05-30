@@ -3,7 +3,7 @@ import {TimeRecord} from "./model/TimeRecord";
 import {DateTransform, Duration} from "./utils/dates";
 import {IDBRepository} from "./persistence/repositories/IDBRepository";
 import {NotificationProps} from "./components/Notification";
-import {MenuProps} from "./components/Menu";
+import {MenuProps} from "./components/menu/Menu";
 
 type NotificationStore = {
     open: boolean,
@@ -42,7 +42,9 @@ type TimeTableStore = {
     currentTimeRecord: Partial<TimeRecord> & TimeRecord
     startRecord: () => void
     stopRecord: () => void
-    updateRecord: (timeRecord: Partial<TimeRecord>) => void
+    updateRecord: (timeRecord: Partial<TimeRecord>) => void,
+    createRecord: (timeRecord: Partial<TimeRecord>) => Promise<TimeRecord>
+    deleteRecord: (id: number | string) => Promise<boolean>
     fetchTimeRecords: () => Promise<void>
 }
 const timeRecordRepo = new IDBRepository(TimeRecord);
@@ -53,6 +55,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
         timeRecords: [],
         currentTimeRecord: new TimeRecord(),
         updateRecord: async (timeRecord: Partial<TimeRecord>) => {
+            console.log("update record: ", {timeRecord})
             const prevRecord = get().timeRecords.find(tr => tr.id === timeRecord.id);
 
             const determineId = () => {
@@ -73,6 +76,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
             if (!prevRecord || timeRecord?.timeStart?.getTime() !== prevRecord?.timeStart?.getTime()) {
                 const id = determineId();
                 const newRecord = {id, ...timeRecord};
+                console.debug("creating new record: ", {newRecord})
                 set({timeRecords: [...get().timeRecords, newRecord]})
                 await timeRecordRepo.update(newRecord);
             }
@@ -85,11 +89,31 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 await timeRecordRepo.update(newRecord);
             }
         },
+        createRecord: async (timeRecord: Partial<TimeRecord>) => {
+            if (!timeRecord.timeStart)
+                throw new Error("start time required.")
+
+            const newRecord: TimeRecord = {
+                ...timeRecord,
+                id: timeRecord.timeStart.getTime(),
+                date: DateTransform.for(timeRecord.timeStart).truncate("day").toDate().getTime(),
+            };
+            if (timeRecord.timeEnd)
+                newRecord.totalHours = Duration.for(timeRecord.timeStart, timeRecord.timeEnd).toHours();
+
+            set({timeRecords: [...get().timeRecords, newRecord]})
+            console.log("create: ", {newRecord})
+            return await timeRecordRepo.create(newRecord);
+        },
+        deleteRecord: async (id) => {
+            set({timeRecords: get().timeRecords.filter(r => r.id !== id)})
+            return await timeRecordRepo.delete(id);
+        },
         startRecord: (): void => {
             const records = get().timeRecords;
             const newRecord = get().currentTimeRecord;
             const now = new Date();
-            newRecord.id = DateTransform.for(now).truncate("day").toDate().getTime();
+            newRecord.id = now.getTime();
             newRecord.date = DateTransform.for(now).truncate("day").toDate().getTime();
             newRecord.timeStart = now;
             set({

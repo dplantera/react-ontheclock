@@ -17,4 +17,5 @@ code {
     --height-appbar: 50px;
     --color-primary: #6E9DB3;
     --color-secondary: #e59D3c;
+    overflow: hidden;
 }

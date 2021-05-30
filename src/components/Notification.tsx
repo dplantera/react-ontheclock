@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import FlexContainer from "./layout/FlexContainer";
 import {useNotificationStore} from "../store";
 import "./Notification.css"

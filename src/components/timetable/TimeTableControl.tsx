@@ -32,7 +32,6 @@ function TimeTableControl(props: any) {
             </FlexContainer>
 
             <FlexContainer styleSetting={{column: true, spaceBetween: true}} className={"app-controls-right"}>
-                <Button onClick={() => console.log("PAUSE")}>PAUSE</Button>
                 <Button onClick={handleToggleTimer}>{!toggleStart? "START": "STOP"}</Button>
             </FlexContainer>
         </FlexContainer>

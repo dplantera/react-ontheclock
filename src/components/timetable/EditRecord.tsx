@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, FunctionComponent, useState} from 'react';
+import React, {FormEvent, FunctionComponent, useState} from 'react';
 import {TimeRecord} from "../../model/TimeRecord";
 import FlexContainer from "../layout/FlexContainer";
 import "./EditRecord.css";
@@ -7,15 +7,17 @@ import Button from "../controls/Button";
 type EditRecordTypes = {
     from?: Date,
     to?: Date,
-    date?: Date
-    onSubmit: (data: Partial<TimeRecord>) => void
+    date?: Date,
+    onSubmit: (data: Partial<TimeRecord>) => void,
+    onCancel?: () => void;
 }
 
-const EditRecord: FunctionComponent<EditRecordTypes> = ({from, to, date, onSubmit}) => {
+const EditRecord: FunctionComponent<EditRecordTypes> = ({from, to, date, onSubmit, onCancel}) => {
     const [start, setStart] = useState(from?.toLocaleTimeString([], {timeStyle: 'short'}) ?? null);
     const [end, setEnd] = useState(to?.toLocaleTimeString([], {timeStyle: 'short'}) ?? null);
 
     const handleSubmit = (e: FormEvent) => {
+        console.log("handleSubmit")
         e.preventDefault();
         const getHourMinute = (shortTime: string) => {
             const [hours, minutes] = shortTime.split(":");
@@ -39,8 +41,14 @@ const EditRecord: FunctionComponent<EditRecordTypes> = ({from, to, date, onSubmi
             newEnd.setMinutes(minutes);
             update.timeEnd = newEnd;
         }
+        console.log("for update: ", {update, date})
         if (update)
             onSubmit(update)
+    }
+
+    const handleAbort = () => {
+        if(onCancel)
+            onCancel();
     }
 
     return (
@@ -58,8 +66,10 @@ const EditRecord: FunctionComponent<EditRecordTypes> = ({from, to, date, onSubmi
                            defaultValue={end ?? undefined}
                            onBlur={(e) => setEnd(e.target.value)}/>
                 </FlexContainer>
-                <Button onClick={handleSubmit} style={{fontSize:"1rem"}}>Speichern</Button>
+                <Button onClick={handleSubmit} style={{fontSize:"1rem", backgroundColor:"var(--color-primary)", color:"white"}}>Speichern</Button>
+                <Button onClick={handleAbort} style={{fontSize:"1rem"}}>Abbrechen</Button>
             </form>
+
         </FlexContainer>
     );
 };

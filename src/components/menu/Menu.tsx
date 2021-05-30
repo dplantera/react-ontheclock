@@ -1,12 +1,14 @@
 import React, {FunctionComponent} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
-import {useMenuStore} from "../store";
+import {useMenuStore} from "../../store";
 import "./Menu.css";
 import {faEdit} from "@fortawesome/free-solid-svg-icons/faEdit";
 import {faTrashAlt} from "@fortawesome/free-solid-svg-icons/faTrashAlt";
 import {faPlusSquare} from "@fortawesome/free-solid-svg-icons/faPlusSquare";
 import {faAngleLeft} from "@fortawesome/free-solid-svg-icons/faAngleLeft";
+import MenuItem, {MenuItemProps} from "./MenuItem";
+import {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export type MenuProps = {
     position?: { x: number, y: number },
@@ -25,14 +27,22 @@ const Menu: FunctionComponent<MenuProps> = ({
                                             }) => {
     const [visible, setVisible, {
         position: storedPos,
-        onCreate:storedOnCreate,
-        onDelete:storedOnDelete,
-        onUpdate:storedOnUpdate,
-        onAbort:storedOnAbort
+        onCreate: storedOnCreate,
+        onDelete: storedOnDelete,
+        onUpdate: storedOnUpdate,
+        onAbort: storedOnAbort
     }] = useMenuStore(state => [state.visible, state.setVisible, state.props]);
 
     const handleClose = () => {
         setVisible(false);
+    }
+
+    const IconMenu: FunctionComponent<MenuItemProps & { icon: IconDefinition }> = ({onClick, icon}) => {
+        return (
+            <MenuItem className={"icon-container"} onClick={onClick}>
+                <FontAwesomeIcon icon={icon} className={"icon"}/>
+            </MenuItem>
+        )
     }
 
     const show = () => {
@@ -43,18 +53,10 @@ const Menu: FunctionComponent<MenuProps> = ({
                          left: position?.x ?? storedPos?.x ?? 0,
                          top: position?.y ?? storedPos?.y ?? 0
                      }}>
-                    <div className={"icon-container"} onClick={onUpdate ?? storedOnUpdate}>
-                        <FontAwesomeIcon icon={faEdit} className={"icon"} />
-                    </div>
-                    <div className={"icon-container"}>
-                        <FontAwesomeIcon icon={faPlusSquare} onClick={storedOnCreate ?? onCreate} className={"icon"}/>
-                    </div>
-                    <div className={"icon-container"}>
-                        <FontAwesomeIcon icon={faTrashAlt} onClick={storedOnDelete ?? onDelete} className={"icon"}/>
-                    </div>
-                    <div className={"icon-container"}>
-                        <FontAwesomeIcon icon={faAngleLeft} onClick={storedOnAbort ?? onAbort} className={"icon"}/>
-                    </div>
+                    <IconMenu icon={faEdit} onClick={onUpdate ?? storedOnUpdate} />
+                    <IconMenu icon={faPlusSquare} onClick={storedOnCreate ?? onCreate} />
+                    <IconMenu icon={faTrashAlt} onClick={storedOnDelete ?? onDelete} />
+                    <IconMenu icon={faAngleLeft} onClick={storedOnAbort ?? onAbort} />
                 </div>
             )
         return null;

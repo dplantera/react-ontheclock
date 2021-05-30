@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useCallback, useRef, memo, HTMLAttributes} from 'react';
 import "./FlexContainer.css"
-import {log} from "../../utils/logger";
 
 interface IMapping {
     [propertyName: string]: any

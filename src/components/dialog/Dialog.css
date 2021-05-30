@@ -1,0 +1,25 @@
+.dialog {
+    background-color: white;
+    gap: 20px;
+    padding: 20px;
+    min-width: 200px;
+    min-height: 100px;
+    width: 50%;
+    height: 25%;
+    justify-content: space-between;
+    align-items: center;
+
+    border: var(--color-primary) 2px solid;
+    border-radius: 25px;
+}
+
+.dialog-content {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.dialog-controls {
+    position: relative;
+    height: 20%;
+    gap: 20px;
+}

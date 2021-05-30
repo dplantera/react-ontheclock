@@ -10,8 +10,7 @@ import Calendar from "./components/Calendar";
 import {useNotificationStore, useTimeTableStore} from "./store";
 
 import Notification from "./components/Notification";
-import Menu from "./components/Menu";
-import EditRecord from "./components/timetable/EditRecord";
+import Menu from "./components/menu/Menu";
 
 function App() {
     const [notify] = useNotificationStore(state => [state.notify]);
@@ -31,7 +30,7 @@ function App() {
                 content: <span> <p>Zeiten konnten nicht geladen werden!</p> <p>{err.message}</p></span>
             })
         });
-    }, [fetchTimeRecords])
+    }, [fetchTimeRecords, notify])
 
     return (
         <div id="app" className="App">

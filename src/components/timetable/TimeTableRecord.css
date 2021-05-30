@@ -40,3 +40,8 @@
     width: 30%;
     text-align: center;
 }
+
+.menu-icon {
+    min-height: 25px;
+    min-width: 25px;
+}

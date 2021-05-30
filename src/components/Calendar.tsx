@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactCalendar, {CalendarTileProperties} from "react-calendar"
-import {getLogger} from "../utils/logger";
 import {useCalendarStore, useTimeTableStore} from "../store";
-const log = getLogger("Calendar");
 
 
 function Calendar(props:any) {
