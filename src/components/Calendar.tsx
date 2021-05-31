@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactCalendar, {CalendarTileProperties} from "react-calendar"
 import {useCalendarStore, useTimeTableStore} from "../store";
-
+import "./Calendar.css"
 
 function Calendar(props:any) {
     const dates = useTimeTableStore(state => state.timeRecords)
@@ -27,7 +27,7 @@ function Calendar(props:any) {
     }
 
     return (
-        <ReactCalendar value={selectedDate} onChange={handleChanceDate} tileContent={tileContent}/>
+        <ReactCalendar className={"time-calender"} value={selectedDate} onChange={handleChanceDate} tileContent={tileContent}/>
     );
 }
 

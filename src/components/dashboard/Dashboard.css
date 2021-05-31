@@ -1,6 +1,7 @@
 .dashboard{
-    /*background-color: var(--color-secondary);*/
     justify-content: space-around;
     align-content: space-around;
+    height: 25%;
+    gap: 10px;
 }
 

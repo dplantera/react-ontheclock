@@ -1,13 +1,13 @@
 .over-hours {
     position: relative;
-    min-height: 50px;
+    min-height: 25px;
     min-width: 50px;
     max-width: 90%;
+    max-height: 30%;
     background-color: #ffffff;
-    font-size: 4rem;
+    font-size: 1.5rem;
     text-align: center;
     justify-content: center;
-    padding: 5px;
     overflow: hidden;
     border: black 2px solid;
     border-radius: 15px;
@@ -15,19 +15,19 @@
 
 .over-hours-item {
     align-self: center;
-    margin:5px;
     flex-grow: 1;
 }
 
 .over-hours-item-label {
+    position: absolute;
     font-size: 1rem;
+    left: 0;
+    top: 0;
+    padding: 5px;
 }
 
 .over-hours-sm {
     width: 40%;
-    height: auto;
-    max-width: 50%;
-    max-height: 50%;
 }
 
 .over-hours-signal-bad{

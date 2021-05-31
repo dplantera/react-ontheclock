@@ -4,14 +4,14 @@ import {useCallback, useRef, useState} from "react";
 function preventDefault(e: Event) {
     if ( !isTouchEvent(e) ) return;
 
-    if (e.touches.length < 2 && e.preventDefault) {
+    if (e.touches.length < 2 && e.preventDefault && e.cancelable) {
         e.preventDefault();
     }
-};
+}
 
 export function isTouchEvent(e: Event): e is TouchEvent {
     return e && "touches" in e;
-};
+}
 
 interface PressHandlers<T> {
     onLongPress: (e: React.MouseEvent<T> | React.TouchEvent<T>) => void,

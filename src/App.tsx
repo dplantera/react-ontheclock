@@ -33,17 +33,19 @@ function App() {
     }, [fetchTimeRecords, notify])
 
     return (
-        <div id="app" className="App">
-            <Menu/>
-            <FlexContainer styleSetting={{column: true, spaceBetween: true}} className={"app-content"}>
-                <AppBar/>
-                <Calendar/>
-                <TimeTable/>
-                <Dashboard/>
-                <TimeTableControl/>
-            </FlexContainer>
-            <Notification/>
-        </div>
+        <React.Fragment>
+            <div id="app" className="App">
+                <Menu/>
+                <FlexContainer styleSetting={{column: true, spaceBetween: true}} className={"app-content"}>
+                    <AppBar/>
+                    <Calendar/>
+                    <TimeTable/>
+                    <Dashboard/>
+                    <TimeTableControl/>
+                    <Notification/>
+                </FlexContainer>
+            </div>
+        </React.Fragment>
     );
 }
 

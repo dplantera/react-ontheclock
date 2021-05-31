@@ -42,7 +42,7 @@ type TimeTableStore = {
     currentTimeRecord: Partial<TimeRecord> & TimeRecord
     startRecord: () => void
     stopRecord: () => void
-    updateRecord: (timeRecord: Partial<TimeRecord>) => void,
+    updateRecord: (timeRecord: Partial<TimeRecord>) => Promise<void>,
     createRecord: (timeRecord: Partial<TimeRecord>) => Promise<TimeRecord>
     deleteRecord: (id: number | string) => Promise<boolean>
     fetchTimeRecords: () => Promise<void>
@@ -62,9 +62,9 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 if (!prevRecord && timeRecord.id)
                     return timeRecord.id;
                 if (!prevRecord && timeRecord.timeStart)
-                    return DateTransform.for(timeRecord.timeStart).truncate("day").toDate().getTime();
+                    return timeRecord.timeStart.getTime();
                 if (timeRecord.timeStart && prevRecord?.timeStart?.getTime() !== timeRecord.timeStart?.getTime())
-                    return DateTransform.for(timeRecord.timeStart).truncate("day").toDate().getTime();
+                    return timeRecord.timeStart.getTime();
                 if (timeRecord.id)
                     return timeRecord.id;
                 if (prevRecord)
@@ -78,7 +78,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 const newRecord = {id, ...timeRecord};
                 console.debug("creating new record: ", {newRecord})
                 set({timeRecords: [...get().timeRecords, newRecord]})
-                await timeRecordRepo.update(newRecord);
+                 await timeRecordRepo.update(newRecord);
             }
             if (prevRecord) {
                 const id = determineId();
@@ -86,7 +86,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 set({timeRecords: [...get().timeRecords.filter(r => r.id !== prevRecord.id), newRecord]})
                 if (prevRecord.id)
                     await timeRecordRepo.delete(prevRecord.id);
-                await timeRecordRepo.update(newRecord);
+                 await timeRecordRepo.update(newRecord);
             }
         },
         createRecord: async (timeRecord: Partial<TimeRecord>) => {
@@ -121,7 +121,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 timeRecords: [...records, newRecord]
             });
         },
-        stopRecord: (): void => {
+        stopRecord: async (): Promise<void> => {
             const records = get().timeRecords;
             const currentTimeRecord = get().currentTimeRecord;
             currentTimeRecord.timeEnd = new Date();
@@ -133,7 +133,7 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
                 currentTimeRecord: new TimeRecord(),
                 timeRecords: [...records]
             });
-            timeRecordRepo.update(currentTimeRecord);
+            await timeRecordRepo.update(currentTimeRecord);
         },
         fetchTimeRecords: async (): Promise<void> => {
             const timeRecords = await timeRecordRepo.getAll();

@@ -5,7 +5,6 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
 }
 
 code {
@@ -17,5 +16,8 @@ code {
     --height-appbar: 50px;
     --color-primary: #6E9DB3;
     --color-secondary: #e59D3c;
+}
+
+.root {
     overflow: hidden;
 }

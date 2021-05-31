@@ -6,7 +6,7 @@ import {TimeRecord} from "../../model/TimeRecord";
 
 import TimeTableRecord from "./TimeTableRecord";
 
-export default function TimeTable(props: any) {
+export default function TimeTable() {
     const [records, setRecords] = useState([] as TimeRecord[]);
     const selectedDates = useCalendarStore(state => state.selectedDates);
     const timeRecords = useTimeTableStore(state => state.timeRecords);
@@ -16,9 +16,6 @@ export default function TimeTable(props: any) {
         const recordsForSelection = timeRecords.filter(record => record.date && selectedDatesInMS.includes(record.date));
         setRecords(recordsForSelection);
     }, [setRecords, selectedDates, timeRecords])
-
-    const handleUpdate = (update: Partial<TimeRecord>) => {
-    }
 
     const renderRecords = () => {
         if (records.length <= 0)
@@ -31,18 +28,19 @@ export default function TimeTable(props: any) {
                                     total={row.totalHours}
                                     id={row.id}
                                     date={selectedDates[0]}
-                                    onUpdate={handleUpdate}
             />
         })
     }
     return (
-        <FlexContainer className={"time-table"} styleSetting={{column: true}}>
-            <FlexContainer className={"time-table-row headline"} styleSetting={{spaceBetween: true}}>
-                <div>Von</div>
-                <div>Bis</div>
-                <div>Total</div>
-            </FlexContainer>
-            {renderRecords()}
-        </FlexContainer>
+           <FlexContainer className={"time-table"} styleSetting={{column: true}}>
+               <FlexContainer className={"time-table-row headline"} styleSetting={{spaceBetween: true}}>
+                   <div>Von</div>
+                   <div>Bis</div>
+                   <div>Total</div>
+               </FlexContainer>
+               <div className={"time-table-data"}>
+                   {renderRecords()}
+               </div>
+           </FlexContainer>
     );
 }

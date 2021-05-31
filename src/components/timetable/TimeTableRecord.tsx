@@ -19,10 +19,9 @@ type TimeTableRecordProps = {
     start?: Date,
     end?: Date,
     total?: number
-    onUpdate?: (update: Partial<TimeRecord>) => void
 }
 
-const TimeTableRecord = ({id, start, end, total, date, onUpdate}: React.PropsWithChildren<TimeTableRecordProps>) => {
+const TimeTableRecord = ({id, start, end, total, date}: React.PropsWithChildren<TimeTableRecordProps>) => {
     const [updateRecord, deleteRecord, createRecord] = useTimeTableStore(state => [state.updateRecord, state.deleteRecord, state.createRecord])
     const [isMenuOpen, openMenu] = useMenuStore(state => [state.visible, state.open]);
     const [selected, setSelected] = useState(false);
@@ -74,8 +73,9 @@ const TimeTableRecord = ({id, start, end, total, date, onUpdate}: React.PropsWit
                 ).catch(() => notify({
                 type: "error",
                 content: <p>Eintrag konnte nicht gelöscht werden.</p>
-            }))
-
+            })).finally( () =>
+                hideConfirm()
+            )
     }
 
     const handleCreate = (data: Partial<TimeRecord>) => {
@@ -101,8 +101,19 @@ const TimeTableRecord = ({id, start, end, total, date, onUpdate}: React.PropsWit
 
     const handleUpdate = (data: Partial<TimeRecord>) => {
         if (data)
-            updateRecord({timeStart: start, timeEnd: end, ...data, id})
-        handleCloseModal();
+            updateRecord({timeStart: start, timeEnd: end, ...data, id}).then(() => notify({
+                    type: "success",
+                    content: <p>Eintrag aktuallisiert.</p>
+                })
+            ).catch((err) => notify({
+                type: "error",
+                content: <main>
+                    <p>Eintrag konnte nicht aktuallisiert werden.</p>
+                    <p>{err.message}</p>
+                </main>
+            })).finally(() => {
+                handleCloseModal();
+            })
     }
 
     const onLongPress = useLongPress({
