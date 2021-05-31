@@ -49,45 +49,69 @@ type TimeTableStore = {
 }
 const timeRecordRepo = new IDBRepository(TimeRecord);
 
-
+const insertSorted = (timeRecords: TimeRecord[], newRecord: TimeRecord) => {
+    if (newRecord?.id) {
+        const successorIdx = timeRecords.findIndex(successor => (successor.id && newRecord.id) && successor.id > newRecord.id);
+        const insertIdx = successorIdx > 0 ? successorIdx : timeRecords.length;
+        timeRecords.splice(insertIdx , 0, newRecord)
+    }
+}
 export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTableStore>, get: GetState<TimeTableStore>) => (
     {
         timeRecords: [],
         currentTimeRecord: new TimeRecord(),
         updateRecord: async (timeRecord: Partial<TimeRecord>) => {
             console.log("update record: ", {timeRecord})
-            const prevRecord = get().timeRecords.find(tr => tr.id === timeRecord.id);
+            const timeRecords = get().timeRecords;
+            const oldRecordIdx = timeRecords.findIndex(tr => tr.id === timeRecord.id);
+
+            const hasOldRecord = oldRecordIdx !== -1;
+            const oldRecord =  hasOldRecord? get().timeRecords[oldRecordIdx]: null;
 
             const determineId = () => {
-                if (!prevRecord && timeRecord.id)
+                if (!oldRecord && timeRecord.id)
                     return timeRecord.id;
-                if (!prevRecord && timeRecord.timeStart)
+                if (!oldRecord && timeRecord.timeStart)
                     return timeRecord.timeStart.getTime();
-                if (timeRecord.timeStart && prevRecord?.timeStart?.getTime() !== timeRecord.timeStart?.getTime())
+                if (timeRecord.timeStart && oldRecord?.timeStart?.getTime() !== timeRecord.timeStart?.getTime())
                     return timeRecord.timeStart.getTime();
                 if (timeRecord.id)
                     return timeRecord.id;
-                if (prevRecord)
-                    return prevRecord.id;
+                if (oldRecord)
+                    return oldRecord.id;
             }
 
             if (timeRecord.timeStart && timeRecord.timeEnd)
                 timeRecord.totalHours = Duration.for(timeRecord.timeStart, timeRecord.timeEnd).toHours()
-            if (!prevRecord || timeRecord?.timeStart?.getTime() !== prevRecord?.timeStart?.getTime()) {
-                const id = determineId();
-                const newRecord = {id, ...timeRecord};
-                console.debug("creating new record: ", {newRecord})
-                set({timeRecords: [...get().timeRecords, newRecord]})
-                 await timeRecordRepo.update(newRecord);
+
+            const id = determineId();
+            const newRecord = hasOldRecord? {...oldRecord,...timeRecord, id}: {...timeRecord, id};
+            const hasIdChanged = oldRecord?.id !== newRecord.id;
+
+            // id changed => replace record
+            if(hasOldRecord && hasIdChanged){
+                timeRecords.splice(oldRecordIdx, 1);
+                insertSorted(timeRecords, newRecord);
             }
-            if (prevRecord) {
-                const id = determineId();
-                const newRecord = {...prevRecord, ...timeRecord, id};
-                set({timeRecords: [...get().timeRecords.filter(r => r.id !== prevRecord.id), newRecord]})
-                if (prevRecord.id)
-                    await timeRecordRepo.delete(prevRecord.id);
-                 await timeRecordRepo.update(newRecord);
+            // same id => update record
+            else if(hasOldRecord)
+                timeRecords[oldRecordIdx] = newRecord;
+            // new record => create
+            else
+                insertSorted(timeRecords, newRecord);
+
+            set({timeRecords: [...timeRecords]})
+
+            // id is determined by start date => delete old if it has changed
+            if (oldRecord?.id && hasIdChanged) {
+                await timeRecordRepo.delete(oldRecord.id);
             }
+            console.debug("update or create new record: ", {
+                oldRecordIdx,
+                oldRecord,
+                newRecord,
+            })
+            await timeRecordRepo.update(newRecord);
         },
         createRecord: async (timeRecord: Partial<TimeRecord>) => {
             if (!timeRecord.timeStart)
@@ -101,7 +125,9 @@ export const useTimeTableStore = create<TimeTableStore>((set: SetState<TimeTable
             if (timeRecord.timeEnd)
                 newRecord.totalHours = Duration.for(timeRecord.timeStart, timeRecord.timeEnd).toHours();
 
-            set({timeRecords: [...get().timeRecords, newRecord]})
+            const timeRecords = get().timeRecords;
+            insertSorted(timeRecords, newRecord);
+            set({timeRecords: [...timeRecords]})
             console.log("create: ", {newRecord})
             return await timeRecordRepo.create(newRecord);
         },
