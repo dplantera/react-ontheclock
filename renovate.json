@@ -1,6 +1,8 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    ":preserveSemverRanges",
+    ":ignoreModulesAndTests"
   ],
   "groupName": "all"
 }
